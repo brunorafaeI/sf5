@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  app:
+    image: 'bitnami/symfony:1'
+    ports:
+      - '8000:8000'
+    volumes:
+      - '.:/app'
+    environment:
+      - SYMFONY_PROJECT_NAME=backend
+      - MARIADB_HOST=mariadb
+      - MARIADB_PORT_NUMBER=3306
+      - MARIADB_USER=gitlab
+      - MARIADB_PASSWORD=gitlab
+      - MARIADB_DATABASE=gitlab
+    depends_on:
+      - mariadb
+  mariadb:
+    image: 'bitnami/mariadb:10.3'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=gitlab
+      - MARIADB_PASSWORD=gitlab
+      - MARIADB_DATABASE=gitlab
