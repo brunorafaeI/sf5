@@ -26,6 +26,6 @@ phpstan:
 phpunit:
   stage: UnitTests
   script:
-    - php bin/phpunit --testdox
+    - php bin/phpunit
   allow_faillure: false
 

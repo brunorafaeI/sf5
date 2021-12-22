@@ -1,0 +1,39 @@
+name: Symfony
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  symfony-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Verify Code Standards (PHPCS)
+        uses: docker://jakzal/phpqa:php7.4-alpine
+        with:
+          args: phpcs -v --standard=PSR12 --ignore=./backend/src/Kernel.php ./backend/src
+      - name: Copy file .env.test.local
+        run: php -r "file_exists('./backend/.env.test.local') || copy('./backend/.env.test', './backend/.env.test.local');"
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: ./backend/vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      - name: Install Dependencies
+        run: cd backend && composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Create Database
+        run: |
+          mkdir -p ./backend/data
+          touch ./backend/data/database.sqlite
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        env:
+          DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
+        run: |
+          cd ./backend
+          bin/phpunit --testdox
