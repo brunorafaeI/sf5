@@ -1,0 +1,31 @@
+image: jakzal/phpqa:7.4
+
+before_script:
+  - composer install
+
+cache:
+  paths:
+    - ./backend/vendor/
+
+stages:
+  - CodingStandards
+  - UnitTests
+
+phpcs:
+  stage: CodingStandards
+  script:
+    - phpcs -v --standard=PSR12 --ignore=./backend/src/Kernel.php ./backend/src
+  allow_faillure: false
+
+phpstan:
+  stage: CodingStandards
+  script:
+    - phpstan analyse ./backend/src
+  allow_faillure: false
+
+phpunit:
+  stage: UnitTests
+  script:
+    - php bin/phpunit --testdox
+  allow_faillure: false
+
