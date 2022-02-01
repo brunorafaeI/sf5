@@ -1,0 +1,11 @@
+## Vscode IDE settings
+.vscode
+
+## Jetbrains IDE settings
+.idea
+
+# misc
+.DS_Store
+
+## Env
+.env
